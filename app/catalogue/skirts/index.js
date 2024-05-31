@@ -19,7 +19,7 @@ const MyFlatList = () => {
       renderItem={({ item }) => (
         <TouchableOpacity
           onPress={() => {
-            router.push(`./${item.id}?name=${item.name}&brand=${item.brand}&size=${item.size}&image=${item.image}&description=${item.description}&price=${item.price}`);
+            router.push(`./${item.id}?name=${item.name}&brand=${item.brand}&size=${item.size}&image=${item.image}&description=${item.description}&price=${item.price}&kodeLoker=${item.kodeLoker}`);
           }}
           style={styles.item}
         >

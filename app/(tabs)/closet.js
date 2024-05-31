@@ -14,6 +14,7 @@ const initialItems = [
     rentEnd: "7 Apr 2024",
     status: "Shipment",
     image: "https://via.placeholder.com/150",
+    kodeLoker: "123456",
   },
   {
     id: "2",
@@ -23,6 +24,7 @@ const initialItems = [
     rentEnd: "7 Apr 2024",
     status: "Return Now!",
     image: "https://via.placeholder.com/150",
+    kodeLoker: "123456",
   },
 ];
 
@@ -47,6 +49,8 @@ export default function Closet() {
         <Text style={styles.rentingRange}>
           {item.rentStart} - {item.rentEnd}
         </Text>
+        <Text  style={styles.loker}>No Loker: {item.noLoker}</Text>
+        <Text  style={styles.loker}>Kode Loker: {item.kodeLoker}</Text>
         <View style={[styles.button, { backgroundColor: item.status === "Return Now!" ? "#B71800" : "black" }]}>
           <Text style={styles.buttonText}>{item.status}</Text>
         </View>
@@ -102,12 +106,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  kodeLoker: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   brand: {
     fontSize: 16,
     color: "#888",
     marginBottom: 8,
   },
   rentingRange: {
+    fontSize: 14,
+    color: "#666",
+  },
+  loker: {
     fontSize: 14,
     color: "#666",
   },

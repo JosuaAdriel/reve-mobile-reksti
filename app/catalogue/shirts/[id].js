@@ -5,8 +5,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 export default function Page() {
   const router = useRouter();
 
-  const { id, name, brand, image, size, description, price } = useLocalSearchParams();
-  const clothe = { id, name, brand, image, size, description, price };
+  const { id, name, brand, image, size, description, price, kodeLoker } = useLocalSearchParams();
+  const clothe = { id, name, brand, image, size, description, price, kodeLoker };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
