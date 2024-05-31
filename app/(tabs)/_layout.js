@@ -7,7 +7,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 export default function TabLayout() {
-  const colorScheme = "black";
+  const colorScheme = "white";
 
   return (
     <Tabs
@@ -21,7 +21,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           headerTitle: "Home",
-          tabBarIcon: ({ focused }) => <TabBarIcon name={focused ? "home" : "home-outline"} color="black" />,
+          tabBarIcon: ({ focused }) => <TabBarIcon name={focused ? "home" : "home-outline"} color="white" />,
         }}
       />
       <Tabs.Screen
@@ -29,7 +29,7 @@ export default function TabLayout() {
         options={{
           title: "Bag",
           headerTitle: "My Bag",
-          tabBarIcon: ({ focused }) => <TabBarIcon name={focused ? "bag" : "bag-outline"} color="black" />,
+          tabBarIcon: ({ focused }) => <TabBarIcon name={focused ? "bag" : "bag-outline"} color="white" />,
         }}
       />
 
@@ -38,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: "Closet",
           headerTitle: "My Closet",
-          tabBarIcon: ({ focused }) => <MaterialCommunityIcons name={focused ? "wardrobe" : "wardrobe-outline"} size={24} color="black" />,
+          tabBarIcon: ({ focused }) => <MaterialCommunityIcons name={focused ? "wardrobe" : "wardrobe-outline"} size={24} color="white" />,
         }}
       />
 
@@ -47,7 +47,7 @@ export default function TabLayout() {
         options={{
           title: "space",
           headerTitle: "Space",
-          tabBarIcon: ({ focused }) => <AntDesign name={focused ? "star" : "staro"} size={24} color="black" />,
+          tabBarIcon: ({ focused }) => <AntDesign name={focused ? "star" : "staro"} size={24} color="white" />,
         }}
       />
     </Tabs>

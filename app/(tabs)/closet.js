@@ -39,24 +39,39 @@ export default function Closet() {
   }
 
   const [items, setItems] = useState(ClosetData);
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Image source={item.image} style={styles.image} />
-      <View style={styles.details}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.brand}>{item.brand}</Text>
-        <Text style={styles.rentingRange}>Renting Range:</Text>
-        <Text style={styles.rentingRange}>
-          {item.rentStart} - {item.rentEnd}
-        </Text>
-        <Text  style={styles.loker}>No Loker: {item.noLoker}</Text>
-        <Text  style={styles.loker}>Kode Loker: {item.kodeLoker}</Text>
-        <View style={[styles.button, { backgroundColor: item.status === "Return Now!" ? "#B71800" : "black" }]}>
-          <Text style={styles.buttonText}>{item.status}</Text>
+
+  const MyFlatList = () => {
+    const router = useRouter();
+    return (
+      <FlatList data={items} 
+      renderItem={({ item }) => (
+        <View style={styles.item}>
+          <Image source={item.image} style={styles.image} />
+          <View style={styles.details}>
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.brand}>{item.brand}</Text>
+            <Text style={styles.rentingRange}>Renting Range:</Text>
+            <Text style={styles.rentingRange}>
+              {item.rentStart} - {item.rentEnd}
+            </Text>
+            <Text  style={styles.loker}>No Loker: {item.noLoker}</Text>
+            <Text  style={styles.loker}>Kode Loker: {item.kodeLoker}</Text>
+            { item.status == "Finished" ? 
+              <View style={[styles.button]}>
+                <Text style={styles.buttonText}>{item.status}</Text>
+              </View> 
+            : 
+            <TouchableOpacity onPress={() => (router.push({ pathname: "/locker", params: item }))} 
+            style={[styles.button, { backgroundColor: item.status === "Return Now!" ? "#B71800" : "black" }]}>
+              <Text style={styles.buttonText}>{item.status}</Text>
+            </TouchableOpacity>
+             }
+          </View>
         </View>
-      </View>
-    </View>
-  );
+      )}
+      keyExtractor={(item) => item.id} />
+    );
+  }
 
   return (
     <>
@@ -65,7 +80,9 @@ export default function Closet() {
         <View style={styles.container}>
           <Header title="My Closet" />
 
-          <FlatList data={items} keyExtractor={(item) => item.id} renderItem={renderItem} />
+          {/* <FlatList data={items} keyExtractor={(item) => item.id} renderItem={renderItem} /> */}
+          <MyFlatList />
+          
         </View>
       </SafeAreaView>
     </>

@@ -40,7 +40,7 @@ export const ClosetData = [
     brand: "Uniqlo",
     rentStart: "2 Apr 2024",
     rentEnd: "7 Apr 2024",
-    status: "Finished",
+    status: "In Use",
     kodeLoker: "123456",
     noLoker:'3',
     category: "shirt",
