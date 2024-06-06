@@ -3,64 +3,82 @@ import { View, Text, Image, StyleSheet, SafeAreaView, StatusBar, Platform, Touch
 import HelpCenterAccordion from "@/components/Accordion";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'
 
-export default function HomeScreen() {
+
+const INITIAL_REGION = {
+  latitude:37,
+  longitude:-122,
+  latitudeDelta: 2,
+  longitudeDelta: 2
+};
+
+export default function LockerScreen() {
+  const initialLocation = {
+    latitude:-6.890734406865988,
+    longitude:107.61070201534383
+  }
+  const [myLocation, setMyLocation] = React.useState(initialLocation);
+
+  const [revealPin, setRevealPin] = React.useState(false);
   const router = useRouter();
+  const navigation = useNavigation();
+  const params = useLocalSearchParams();
+  const {name, brand, image} = params;
+  handleRevealPin = () => {
+    setRevealPin(!revealPin);
+  }
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="light-content" backgroundColor="#000" />
-        <View style={styles.container}>
-          <Header title="Home" />
-          <ScrollView>
-            <Hero />
-            <View>
-              <Text style={{ color: "#000", fontSize: 16, fontWeight: "bold", marginTop: 20, marginLeft: 20 }}>Catalogue</Text>
-            </View>
-            <View style={styles.columnCatalogue}>
-              <View style={styles.row1}>
-                <TouchableOpacity onPress={() => router.push("../catalogue/pants/")} style={[styles.box1, styles.box]}>
-                  <Text style={styles.boxText}>Pants</Text>
-                  <Image
-                    source={require("@/assets/images/pants.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push("../catalogue/shirts/")} style={[styles.box2, styles.box]}>
-                  <Text style={styles.boxText}>Shirts</Text>
-                  <Image
-                    source={require("@/assets/images/shirts.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
+        <View className="items-center">
+          <Text className="text-xl my-3">Here's the Location of Your Locker</Text>
+          <MapView 
+            style={{width: '100%', height: 400}}
+            initialRegion={{
+              latitude:myLocation.latitude,
+              longitude:myLocation.longitude,
+              latitudeDelta: 0.00922,
+              longitudeDelta: 0.00421
+            }}
+            provider={PROVIDER_GOOGLE}
+          >
+            <Marker
+              coordinate={{
+                latitude:-6.890734406865988,
+                longitude:107.61070201534383,
+                latitudeDelta: 0.00922,
+                longitudeDelta: 0.00421
+              }}
+              title="Institut Teknologi Bandung"
+              description="Labtek V"
+            />
+
+          </MapView>
+          <View className="mt-5 flex-row items-center w-screen px-5">
+            <Image source={image} style={{ width: 100, height: 100 }}/>
+            <View className="justify-center mx-5">
+              <View className="mb-3">
+                <Text className="font-bold text-base">{ name }</Text>
+                <Text>{brand}</Text>
               </View>
-              <View style={styles.row2}>
-                <TouchableOpacity onPress={() => router.push("../catalogue/skirts/")} style={[styles.box3, styles.box]}>
-                  <Text style={styles.boxText}>Skirts</Text>
-                  <Image
-                    source={require("@/assets/images/skirts.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push("../catalogue/sweaters/")} style={[styles.box4, styles.box]}>
-                  <Text style={styles.boxText}>Sweater</Text>
-                  <Image
-                    source={require("@/assets/images/sweater.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
+              <View>
+                <Text className="font-bold">Locker Info:</Text>
+                <Text>Location: ITB</Text>
+                <Text>Locker: 1</Text>
+                <View className="flex-row items-center mt-2">
+                  <Text>Locker Pin:</Text>
+                  <Text className={`ml-2 rounded-lg border p-1 font-bold ${revealPin ? 'bg-white': 'bg-black'}`}>123456</Text>
+                  <TouchableOpacity onPress={()=>(handleRevealPin())} className="ml-2 p-1">
+                    <AntDesign name="eye" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-            <View>
-              <Text style={{ color: "#000", fontSize: 16, fontWeight: "bold", marginTop: 20, marginLeft: 20, marginBottom: 10 }}>Help Center</Text>
-            </View>
-            <HelpCenterAccordion />
-          </ScrollView>
+          </View>
+          
         </View>
       </SafeAreaView>
     </>
@@ -70,7 +88,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#000", // Match the background color of the header
+    backgroundColor: "white", // Match the background color of the header
   },
   container: {
     flex: 1,

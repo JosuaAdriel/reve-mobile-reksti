@@ -54,14 +54,14 @@ export default function Closet() {
             <Text style={styles.rentingRange}>
               {item.rentStart} - {item.rentEnd}
             </Text>
-            <Text  style={styles.loker}>No Loker: {item.noLoker}</Text>
-            <Text  style={styles.loker}>Kode Loker: {item.kodeLoker}</Text>
+            {/* <Text  style={styles.loker}>No Loker: {item.noLoker}</Text>
+            <Text  style={styles.loker}>Kode Loker: {item.kodeLoker}</Text> */}
             { item.status == "Finished" ? 
               <View style={[styles.button]}>
                 <Text style={styles.buttonText}>{item.status}</Text>
               </View> 
             : 
-            <TouchableOpacity onPress={() => (router.push({ pathname: "/locker", params: item }))} 
+            <TouchableOpacity onPress={() => (router.push({ pathname: "/locker", params: {name: item.name, brand: item.brand, image: item.image} }))} 
             style={[styles.button, { backgroundColor: item.status === "Return Now!" ? "#B71800" : "black" }]}>
               <Text style={styles.buttonText}>{item.status}</Text>
             </TouchableOpacity>
