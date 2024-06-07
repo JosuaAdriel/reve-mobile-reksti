@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Platform, StatusBar, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image } from "react-native";
 
 import Header from "../../components/Header";
 import { ClosetData } from "../../data/closet";
 import { useRouter } from "expo-router";
 import { useUser } from "@/hooks/useUser";
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../config/firebase"
+
 const initialItems = [
   {
     id: "1",
@@ -29,6 +32,7 @@ const initialItems = [
 ];
 
 export default function Closet() {
+  const [clothes, setClothes] = useState([])
   const router = useRouter();
 
   const { user } = useUser();
@@ -38,8 +42,14 @@ export default function Closet() {
     return null;
   }
 
+  const db = getFirestore(app);
+
+
   const [items, setItems] = useState(ClosetData);
 
+
+
+  useEffect
   const MyFlatList = () => {
     const router = useRouter();
     return (
