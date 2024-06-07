@@ -20,36 +20,10 @@ export default function HomeScreen() {
             </View>
             <View style={styles.columnCatalogue}>
               <View style={styles.row1}>
-                <TouchableOpacity onPress={() => router.push("../catalogue/pants/")} style={[styles.box1, styles.box]}>
-                  <Text style={styles.boxText}>Pants</Text>
+                <TouchableOpacity onPress={() => router.push("../catalogue/clothes/")} style={[styles.box1, styles.box]}>
+                  <Text style={styles.boxText}>See Clothes</Text>
                   <Image
                     source={require("@/assets/images/pants.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push("../catalogue/shirts/")} style={[styles.box2, styles.box]}>
-                  <Text style={styles.boxText}>Shirts</Text>
-                  <Image
-                    source={require("@/assets/images/shirts.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.row2}>
-                <TouchableOpacity onPress={() => router.push("../catalogue/skirts/")} style={[styles.box3, styles.box]}>
-                  <Text style={styles.boxText}>Skirts</Text>
-                  <Image
-                    source={require("@/assets/images/skirts.jpg")} // Use the imported image
-                    style={styles.fotobesar}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push("../catalogue/sweaters/")} style={[styles.box4, styles.box]}>
-                  <Text style={styles.boxText}>Sweater</Text>
-                  <Image
-                    source={require("@/assets/images/sweater.jpg")} // Use the imported image
                     style={styles.fotobesar}
                     resizeMode="cover"
                   />
@@ -108,8 +82,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   box: {
-    height: 120,
-    width: 163,
+    height: 160,
+    width: 250,
     alignItems: "center", //kanan kiri
     justifyContent: "center", //atas bawah
     borderRadius: 10,
