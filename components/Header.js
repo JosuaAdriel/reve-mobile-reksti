@@ -42,7 +42,7 @@ export default function Header({ title }) {
       </View>
       {user ? (
         <Menu>
-          <MenuTrigger>
+          {/* <MenuTrigger>
             <Image
               source={require("@/assets/images/pp-icon.png")} // Replace with your profile icon path
               style={styles.profileLogo}
@@ -52,7 +52,7 @@ export default function Header({ title }) {
             <MenuOption onSelect={onLogout}>
               <Text style={styles.menuText}>Log Out</Text>
             </MenuOption>
-          </MenuOptions>
+          </MenuOptions> */}
         </Menu>
       ) : (
         <TouchableOpacity>

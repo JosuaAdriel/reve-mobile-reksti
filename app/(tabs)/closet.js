@@ -1,94 +1,112 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Platform, StatusBar, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image } from "react-native";
+import React, { useEffect, useState, useFocusEffect, useCallback } from "react";
+import { View, Text, Platform, StatusBar, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, RefreshControl } from "react-native";
 
 import Header from "../../components/Header";
 import { ClosetData } from "../../data/closet";
 import { useRouter } from "expo-router";
-import { useUser } from "@/hooks/useUser";
-import { getFirestore, collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../config/firebase"
-
-const initialItems = [
-  {
-    id: "1",
-    name: "Blue Jeans",
-    brand: "Brand B",
-    rentStart: "2 Apr 2024",
-    rentEnd: "7 Apr 2024",
-    status: "Shipment",
-    image: "https://via.placeholder.com/150",
-    kodeLoker: "123456",
-  },
-  {
-    id: "2",
-    name: "White T-Shirt",
-    brand: "Brand C",
-    rentStart: "2 Apr 2024",
-    rentEnd: "7 Apr 2024",
-    status: "Return Now!",
-    image: "https://via.placeholder.com/150",
-    kodeLoker: "123456",
-  },
-];
+import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy, doc } from "firebase/firestore";
+import { db } from "../_layout"
 
 export default function Closet() {
-  const [clothes, setClothes] = useState([])
+  const [refreshing, setRefreshing] = React.useState(false);
+  
+  const [rents, setRents] = useState([]);
+
   const router = useRouter();
 
-  const { user } = useUser();
+  const { userEmail } = "josua.sinabutar@gmail.com";
 
-  if (!user) {
-    router.push("/login");
-    return null;
+  const fetchData = async () => {
+    try {
+      const postRef = collection(db, "Rent");
+      const q = query(postRef, orderBy("rentStatus", "desc"));
+      const querySnapshot = await getDocs(q);
+
+      // const querySnapshot = await getDocs(collection(db, "Rent"));
+
+      const rentList = [];
+      setRents([]);
+      querySnapshot.forEach((doc) => {
+        console.log("Docs: ",doc.data());
+        setRents(rents=>[...rents, doc.data()]);
+      });
+    } catch (e) {
+      console.error("Error getting documents: ", e);
+    }
   }
+  useEffect(()=>{
+    fetchData();
+  },[])
 
-  const db = getFirestore(app);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData().then(() => {
+      setRefreshing(false);
+    });
+  }, []);
+
+
+  
+
+  // join rents with clothes based on clothesID
+  
+
+
+  // if (!user) {
+  //   router.push("/login");
+  //   return null;
+  // }
 
 
   const [items, setItems] = useState(ClosetData);
 
-
-
-  useEffect
   const MyFlatList = () => {
     const router = useRouter();
     return (
-      <FlatList data={items} 
+      <FlatList data={rents} 
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       renderItem={({ item }) => (
         <View style={styles.item}>
-          <Image source={item.image} style={styles.image} />
+          <Image source={{uri: item.image}} style={styles.image}/>
           <View style={styles.details}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.brand}>{item.brand}</Text>
+            <Text style={styles.name}>{item.clothesName}</Text>
+            <Text style={styles.brand}>{item.brandName}</Text>
             <Text style={styles.rentingRange}>Renting Range:</Text>
             <Text style={styles.rentingRange}>
               {item.rentStart} - {item.rentEnd}
             </Text>
             {/* <Text  style={styles.loker}>No Loker: {item.noLoker}</Text>
             <Text  style={styles.loker}>Kode Loker: {item.kodeLoker}</Text> */}
-            { item.status == "Finished" ? 
+            { item.rentStatus == 0 ? (
               <View style={[styles.button]}>
-                <Text style={styles.buttonText}>{item.status}</Text>
+                <Text className="text-center font-bold text-white">Returned</Text>
               </View> 
+            )
             : 
-            <TouchableOpacity onPress={() => (router.push({ pathname: "/locker", params: {name: item.name, brand: item.brand, image: item.image} }))} 
-            style={[styles.button, { backgroundColor: item.status === "Return Now!" ? "#B71800" : "black" }]}>
-              <Text style={styles.buttonText}>{item.status}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => (router.push({ pathname: "/locker", 
+                params: {name: item.clothesName, brand: item.brandName, image: item.image, outlet: item.outlet,lockerNumber:item.lockerNumber,pin:item.pin,latitude:item.latitude,longitude:item.longitude} }))} 
+                style={[styles.button, { backgroundColor: item.status === 2 ? "#B71800" : "black" }]} >
+                <Text style={styles.buttonText}>Go To Locker</Text>
+              </TouchableOpacity>
+            
              }
           </View>
         </View>
       )}
-      keyExtractor={(item) => item.id} />
+     />
     );
   }
 
   return (
     <>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea}
+      >
         <StatusBar barStyle="light-content" backgroundColor="#000" />
         <View style={styles.container}>
           <Header title="My Closet" />
+          {/* <TouchableOpacity onPress={console.log("rent",rents)} clothesName="w-screen bg-gray-400 border"><Text>Test</Text></TouchableOpacity> */}
 
           {/* <FlatList data={items} keyExtractor={(item) => item.id} renderItem={renderItem} /> */}
           <MyFlatList />

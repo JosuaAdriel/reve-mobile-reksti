@@ -1,128 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Platform, StatusBar, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView } from "react-native";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import { useRouter } from "expo-router";
-import { Pants, Skirts, Shirts, Sweaters } from "../../../data/catalog";
+import { Pants } from "../../../data/catalog";
+
+import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy, doc } from "firebase/firestore";
+import { db } from "../../_layout"
 
 const currencyFormatter = new Intl.NumberFormat("id-ID", {
   style: "currency",
   currency: "IDR",
 });
 
-const ListPants = () => {
+const ListClothes = () => {
+  const [clothes, setClothes] = useState([]);
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const postRef = collection(db, "Clothes");
+        const q = query(postRef, orderBy("clothesName", "asc"));
+        const querySnapshot = await getDocs(q);
+
+        setClothes([]);
+        querySnapshot.forEach((doc) => {
+          console.log("Docs: ",doc.data());
+          setClothes(clothes=>[...clothes, doc.data()]);
+        });
+      } catch (e) {
+        console.error("Error getting documents: ", e);
+      }
+    }
+    fetchData();
+  },[])
   const router = useRouter();
   return (
     <FlatList
       scrollEnabled={false}
-      data={Pants}
+      data={clothes}
       renderItem={({ item }) => (
         <TouchableOpacity
           onPress={() => {
-            router.push(`./${item.id}?name=${item.name}&brand=${item.brand}&size=${item.size}&image=${item.image}&description=${item.description}&price=${item.price}&kodeLoker=${item.kodeLoker}`);
+            router.push(`./${item.clothesID}?name=${item.clothesName}&price=${item.price}&brand=${item.brandName}&image=${encodeURIComponent(item.image)}&size=${item.clothesSize}&outlet=${item.outlet}&latitude=${item.latitude}&longitude=${item.longitude}&lockerNumber=${item.lockerNumber}&pin=${item.pin}&weight=${item.weight}`);
           }}
-          style={styles.item}
+          className="w-1/2 p-1"
         >
-          <View style={{ width: "100%", alignItems: "center", borderRadius: 8, borderWidth: 1, padding: 8 }}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.name}>{item.name}</Text>
-            <View style={styles.priceAndSizeContainer}>
-              <Text style={styles.price}>{currencyFormatter.format(item.price)}</Text>
-            </View>
-            <Text style={styles.size}>Size: {item.size}</Text>
+          <View className="w-full border border-gray-200 rounded-lg items-center">
+            <Image source={{uri:item.image}} style={{width:'100%',height:150}} className="rounded-lg" />
+            <Text className="text-center h-10 my-2 font-bold text-base">{item.clothesName}</Text>
+            <Text className="font-bold text-base">{currencyFormatter.format(item.price)}</Text>
+            <Text className="mb-2">Size: {item.clothesSize}</Text>
           </View>
         </TouchableOpacity>
       )}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2}
-    />
-  );
-};
-
-const ListShirts = () => {
-  const router = useRouter();
-  return (
-    <FlatList
-      scrollEnabled={false}
-      data={Shirts}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() => {
-            router.push(`./${item.id}?name=${item.name}&brand=${item.brand}&size=${item.size}&image=${item.image}&description=${item.description}&price=${item.price}&kodeLoker=${item.kodeLoker}`);
-          }}
-          style={styles.item}
-        >
-          <View style={{ width: "100%", alignItems: "center", borderRadius: 8, borderWidth: 1, padding: 8 }}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.name}>{item.name}</Text>
-            <View style={styles.priceAndSizeContainer}>
-              <Text style={styles.price}>{currencyFormatter.format(item.price)}</Text>
-            </View>
-            <Text style={styles.size}>Size: {item.size}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2}
-    />
-  );
-};
-
-
-const ListSweaters = () => {
-  const router = useRouter();
-  return (
-    <FlatList
-      scrollEnabled={false}
-      data={Sweaters}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() => {
-            router.push(`./${item.id}?name=${item.name}&brand=${item.brand}&size=${item.size}&image=${item.image}&description=${item.description}&price=${item.price}&kodeLoker=${item.kodeLoker}`);
-          }}
-          style={styles.item}
-        >
-          <View style={{ width: "100%", alignItems: "center", borderRadius: 8, borderWidth: 1, padding: 8 }}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.name}>{item.name}</Text>
-            <View style={styles.priceAndSizeContainer}>
-              <Text style={styles.price}>{currencyFormatter.format(item.price)}</Text>
-            </View>
-            <Text style={styles.size}>Size: {item.size}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2}
-    />
-  );
-};
-
-
-const ListSkirt = () => {
-  const router = useRouter();
-  return (
-    <FlatList
-      scrollEnabled={false}
-      data={Skirts}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          onPress={() => {
-            router.push(`./${item.id}?name=${item.name}&brand=${item.brand}&size=${item.size}&image=${item.image}&description=${item.description}&price=${item.price}&kodeLoker=${item.kodeLoker}`);
-          }}
-          style={styles.item}
-        >
-          <View style={{ width: "100%", alignItems: "center", borderRadius: 8, borderWidth: 1, padding: 8 }}>
-            <Image source={item.image} style={styles.image} />
-            <Text style={styles.name}>{item.name}</Text>
-            <View style={styles.priceAndSizeContainer}>
-              <Text style={styles.price}>{currencyFormatter.format(item.price)}</Text>
-            </View>
-            <Text style={styles.size}>Size: {item.size}</Text>
-          </View>
-        </TouchableOpacity>
-      )}
-      keyExtractor={(item) => item.id.toString()}
       numColumns={2}
     />
   );
@@ -135,17 +66,14 @@ const ShirtCatalogue = () => {
       <SafeAreaView style={styles.safeArea}>
         <StatusBar barStyle="light-content" backgroundColor="#000" />
         <View style={styles.container}>
-          <Header title="Catalogue" />
+          {/* <Header title="Catalogue" /> */}
           <ScrollView>
             <Hero />
             <View>
               <Text style={{ color: "#000", fontSize: 16, fontWeight: "bold", marginTop: 20, marginLeft: 20 }}>Clothes</Text>
             </View>
             <View style={{ marginHorizontal: 16 }}>
-              <ListPants />
-              <ListSkirt />
-              <ListShirts />
-              <ListSweaters />
+              <ListClothes />
             </View>
           </ScrollView>
         </View>

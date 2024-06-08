@@ -7,14 +7,9 @@ import { StackActions } from "@react-navigation/native";
 import { useUser } from "@/hooks/useUser";
 
 export default function PurchaseConfirmed() {
-  const { user } = useUser();
+  const { userEmail } = "josua.sinabutar@gmail.com";
 
   const navigation = useNavigation();
-
-  if (!user) {
-    router.push("/login");
-    return null;
-  }
 
   return (
     <View className="bg-gray-100 h-full w-full flex flex-col my-auto items-center p-8 gap-y-4 justify-center">
@@ -27,7 +22,6 @@ export default function PurchaseConfirmed() {
           Thank you for your purchase!
         </Text>
         <Text className="text-lg">Your order has been confirmed.</Text>
-        <Text className="text-lg">Please wait for the delivery.</Text>
       </View>
       <Button
         mode="contained"

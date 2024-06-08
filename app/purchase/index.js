@@ -1,9 +1,14 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, View, Image } from "react-native";
+import { ScrollView, Text, View, Image, TouchableOpacity, processColor } from "react-native";
 import { Button, Checkbox } from "react-native-paper";
 import { FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@/hooks/useUser";
+import { useEffect, useState } from "react";
+import { Formik } from 'formik';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy, doc, addDoc } from "firebase/firestore";
+import { db } from "../_layout"
 
 const currencyFormatter = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -11,116 +16,143 @@ const currencyFormatter = new Intl.NumberFormat("id-ID", {
 });
 
 export default function Purchase() {
-  const { user } = useUser();
+  const { userEmail } = "josua.sinabutar@gmail.com";
   const router = useRouter();
 
-  const clothes = [useLocalSearchParams("clothes")];
+  const { id, name, brand, size, image, price, lockerNumber, pin, weight, latitude, longitude, outlet } = useLocalSearchParams(); 
 
-  console.log(clothes);
+  useEffect(() => {
+    console.log("pin: ", pin);
+  },[])
 
-  if (!user) {
-    router.push("/login");
-    return null;
+  const [days, setDays] = useState(1);
+  const [totalPrice, setPrice] = useState(price);
+
+  const decrementDays = (values,setFieldValue) => {
+    const newDays = values.days - 1;
+    setFieldValue('days',newDays);
+    const newTotalPrice = newDays*price;
+    setFieldValue('totalPrice',newTotalPrice);
+    setDays(newDays);
+    setPrice(newTotalPrice);
   }
 
-  if (!clothes) {
-    router.push("/not-found");
-    return null;
+  const incrementDays = (values,setFieldValue) => {
+    const newDays = values.days + 1;
+    setFieldValue('days',newDays);
+    const newTotalPrice = newDays*price;
+    setFieldValue('totalPrice',newTotalPrice);
+    setDays(newDays);
+    setPrice(newTotalPrice);
   }
 
-  const renderClothe = ({ item }) => {
-    return (
-      <View className="flex flex-row pt-1 pb-2 border-[1.5px] rounded-md border-gray-400 justify-start items-center gap-2 m-0 shadow-sm shadow-black">
-        <Checkbox status="checked" color="#404040" />
-        <View className="flex flex-row border-2 rounded-md border-gray-400 w-12 h-16">
-          <Image source={item.image} className="max-h-full max-w-full" />
-        </View>
-        <View className="flex flex-col gap-1">
-          <Text className="text-lg font-bold">{item.name}</Text>
-          <View className="flex flex-row justify-between">
-            <Text className="text-sm">{item.brand}</Text>
-            <Text className="text-sm font-bold">{item.size}</Text>
-          </View>
-          <Text className="text-sm mr-2">
-            {currencyFormatter.format(item.price)} / day
-          </Text>
-        </View>
-      </View>
-    );
-  };
+  const formattedDate = (days) => {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+
+  const onSubmitMethod = (days, totalPrice) => {
+    const rentStart = formattedDate(0);
+    const rentEnd = formattedDate(days);
+
+    const docData = {
+      brandName: brand,
+      clothesID: id,
+      clothesName: name,
+      clothesSize: size,
+      email: String(userEmail),
+      image: image,
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+      lockerNumber: lockerNumber,
+      outlet: outlet,
+      pin: pin,
+      rentEnd: rentEnd,
+      rentStart: rentStart,
+      rentStatus: 1,
+      totalPrice: parseInt(totalPrice),
+      weight: parseFloat(weight)
+    }
+    console.log(JSON.stringify(docData))
+
+    try {
+      const docRef = addDoc(collection(db, "Rent"), docData);
+      router.push("/purchase/confirmed");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
 
   return (
     <View className="flex flex-col h-full w-full bg-white p-8 overflow-visible">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        className="w-full overflow-visible gap-y-4 max-w-full">
-        <FlatList
-          data={clothes}
-          renderItem={renderClothe}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-          className="w-full overflow-visible mb-8"
-        />
-        <View className="flex flex-col gap-y-2">
-          <Text className="text-lg font-extrabold text-gray-700">
-            payment method
-          </Text>
-          <View className="flex flex-row gap-x-2 border-2 m-0 border-neutral-400 rounded-lg px-2 py-3">
-            <View className="flex flex-col items-start">
-              <Text className="text-lg font-bold">QRIS</Text>
-              <Text className="text-sm">+ 0% Charge</Text>
+        className="w-full overflow-visible max-w-full">
+        <View className="flex flex-row rounded-md p-3 border border-gray-400 justify-start items-center">
+          <View className="flex flex-row border rounded-md border-gray-400">
+            <Image source={{uri:image}} style={{height:64, width:48}} className="border-2 rounded-md border-gray-400"/>
+          </View>
+          <View className="flex flex-col gap-1 ml-2">
+            <Text className="text-lg font-bold">{name}</Text>
+            <View className="flex flex-row">
+              <Text className="text-sm">{brand}, </Text>
+              <Text className="text-sm">Size: {size}</Text>
             </View>
+            <Text className="text-sm mr-2">
+              {currencyFormatter.format(price)} / day
+            </Text>
           </View>
         </View>
-        <View className="flex flex-col gap-y-2">
-          <Text className="text-lg font-extrabold text-gray-700 mt-4">
-            Delivery Address
-          </Text>
-          <View className="flex flex-col gap-x-2">
-            <Text className="text-sm font-bold">
-              Rumah{" "}
-              <Text className="text-sm text-neutral-500 font-normal">
-                Silvester Adriel Putra Aan
-              </Text>
-            </Text>
-            <Text className="text-sm font-bold">Jl. Kaliurang KM 5,3</Text>
-          </View>
-        </View>
-        <View className="flex flex-col gap-y-0 ">
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-md text-gray-700 mt-4">
-              Subtotal
-            </Text>
-            <Text className="text-md text-gray-700 mt-4">
-              {currencyFormatter.format(
-                clothes.reduce((acc, curr) => acc + curr.price, 0)
+        <View>
+          <View className="items-center mt-4">
+            <Formik
+              initialValues={{days: 1, totalPrice: price}}
+              onSubmit={value =>onSubmitMethod(value)}
+            >
+              {({handleChange,handleBlur,handleSubmit,values,setFieldValue,error})=> (
+                <View>
+                  <View className="flex-row justify-between w-full">
+                    <Text className="text-lg font-bold">Rental Duration</Text>
+                    <View className="flex-row">
+                      <TouchableOpacity 
+                        onPress={() => decrementDays(values,setFieldValue)}
+                        className={`mr-[10] w-[30px] h-[30px] bg-white border-[0.5px] border-gray-300 rounded-full items-center justify-center ${parseInt(values.days) > 1 ? 'bg-black border-white' : ''}`}
+                        disabled={parseInt(values.days) <= 1}
+                      >
+                        <AntDesign name="minus" size={15} color={`${parseInt(values.days) > 1 ? 'white' : 'black'}`} className=""/>
+                      </TouchableOpacity>
+                      <Text className="text-lg font-bold">{values.days} days</Text>
+                      <TouchableOpacity 
+                          onPress={() => incrementDays(values,setFieldValue)}
+                          className="ml-[10] w-[30px] h-[30px] bg-black border-white rounded-full items-center justify-center"
+                      >
+                        <AntDesign name="plus" size={15} color="white" className=""/>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View className="flex-row justify-between my-5 ">
+                    <Text className="text-lg font-bold">Total: </Text><Text className="font-bold text-lg">{currencyFormatter.format(values.totalPrice)}</Text>
+                  </View>
+                </View>
+                
               )}
-            </Text>
-          </View>
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-md text-gray-700 mt-4">
-              Delivery Fee
-            </Text>
-            <Text className="text-md text-gray-700 mt-4">Rp 0</Text>
-          </View>
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-md text-gray-700 mt-4">Total</Text>
-            <Text className="text-xl font-bold text-gray-700 mt-4">
-              {currencyFormatter.format(
-                clothes.reduce((acc, curr) => acc + curr.price, 0)
-              )}
-            </Text>
+            </Formik>
           </View>
         </View>
-        <Button
+        <TouchableOpacity
           mode="contained"
-          onPress={() => router.push("/purchase/confirmed")}
-          className="mt-4 rounded-md h-12 items-center justify-center"
-          buttonColor="black"
+          // onPress={() => router.push("/purchase/confirmed")}
+          onPress={()=> onSubmitMethod(days,totalPrice)}
+          className="rounded-md h-12 items-center justify-center bg-black"
           labelStyle={{ width: "100%" }}
           textColor="white">
-          Purchase
-        </Button>
+          <Text className="font-bold text-white text-lg">Purchase</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );

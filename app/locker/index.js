@@ -5,28 +5,21 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'
-
-
-const INITIAL_REGION = {
-  latitude:37,
-  longitude:-122,
-  latitudeDelta: 2,
-  longitudeDelta: 2
-};
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 
 export default function LockerScreen() {
-  const initialLocation = {
-    latitude:-6.890734406865988,
-    longitude:107.61070201534383
-  }
-  const [myLocation, setMyLocation] = React.useState(initialLocation);
 
   const [revealPin, setRevealPin] = React.useState(false);
   const router = useRouter();
   const navigation = useNavigation();
   const params = useLocalSearchParams();
-  const {name, brand, image} = params;
+  const {name, brand, image, outlet, lockerNumber, pin, latitude, longitude} = params;
+
+  const initialLocation = {
+    latitude:-6.890734406865988,
+    longitude:107.61070201534383
+  }
+  const [myLocation, setMyLocation] = React.useState(initialLocation);
   handleRevealPin = () => {
     setRevealPin(!revealPin);
   }
@@ -38,8 +31,8 @@ export default function LockerScreen() {
           <MapView 
             style={{width: '100%', height: 400}}
             initialRegion={{
-              latitude:myLocation.latitude,
-              longitude:myLocation.longitude,
+              latitude:parseFloat(latitude),
+              longitude:parseFloat(longitude),
               latitudeDelta: 0.00922,
               longitudeDelta: 0.00421
             }}
@@ -47,18 +40,17 @@ export default function LockerScreen() {
           >
             <Marker
               coordinate={{
-                latitude:-6.890734406865988,
-                longitude:107.61070201534383,
+                latitude:parseFloat(latitude),
+                longitude:parseFloat(longitude),
                 latitudeDelta: 0.00922,
                 longitudeDelta: 0.00421
               }}
-              title="Institut Teknologi Bandung"
-              description="Labtek V"
+              title={outlet}
             />
 
           </MapView>
           <View className="mt-5 flex-row items-center w-screen px-5">
-            <Image source={image} style={{ width: 100, height: 100 }}/>
+            <Image source={{uri: image}} style={{ width: 100, height: 100 }}/>
             <View className="justify-center mx-5">
               <View className="mb-3">
                 <Text className="font-bold text-base">{ name }</Text>
@@ -66,11 +58,11 @@ export default function LockerScreen() {
               </View>
               <View>
                 <Text className="font-bold">Locker Info:</Text>
-                <Text>Location: ITB</Text>
-                <Text>Locker: 1</Text>
+                <Text>Location: {outlet}</Text>
+                <Text>Locker: {lockerNumber}</Text>
                 <View className="flex-row items-center mt-2">
                   <Text>Locker Pin:</Text>
-                  <Text className={`ml-2 rounded-lg border p-1 font-bold ${revealPin ? 'bg-white': 'bg-black'}`}>123456</Text>
+                  <Text className={`ml-2 rounded-lg border p-1 font-bold ${revealPin ? 'bg-white': 'bg-black'}`}>{pin}</Text>
                   <TouchableOpacity onPress={()=>(handleRevealPin())} className="ml-2 p-1">
                     <AntDesign name="eye" size={24} color="black" />
                   </TouchableOpacity>
