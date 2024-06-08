@@ -3,7 +3,6 @@ import { View, Text, Platform, StatusBar, SafeAreaView, TouchableOpacity, StyleS
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import { useRouter } from "expo-router";
-import { Pants } from "../../../data/catalog";
 
 import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy, doc } from "firebase/firestore";
 import { db } from "../../_layout"

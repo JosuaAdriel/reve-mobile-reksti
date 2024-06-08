@@ -2,7 +2,6 @@ import React, { useEffect, useState, useFocusEffect, useCallback } from "react";
 import { View, Text, Platform, StatusBar, SafeAreaView, TouchableOpacity, StyleSheet, FlatList, Image, RefreshControl } from "react-native";
 
 import Header from "../../components/Header";
-import { ClosetData } from "../../data/closet";
 import { useRouter } from "expo-router";
 import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy, doc } from "firebase/firestore";
 import { db } from "../_layout"
@@ -43,21 +42,6 @@ export default function Closet() {
       setRefreshing(false);
     });
   }, []);
-
-
-  
-
-  // join rents with clothes based on clothesID
-  
-
-
-  // if (!user) {
-  //   router.push("/login");
-  //   return null;
-  // }
-
-
-  const [items, setItems] = useState(ClosetData);
 
   const MyFlatList = () => {
     const router = useRouter();
