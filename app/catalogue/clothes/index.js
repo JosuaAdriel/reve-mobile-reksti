@@ -25,7 +25,6 @@ const ListClothes = () => {
 
         setClothes([]);
         querySnapshot.forEach((doc) => {
-          console.log("Docs: ",doc.data());
           setClothes(clothes=>[...clothes, doc.data()]);
         });
       } catch (e) {

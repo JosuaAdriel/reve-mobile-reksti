@@ -27,7 +27,6 @@ export default function Closet() {
       const rentList = [];
       setRents([]);
       querySnapshot.forEach((doc) => {
-        console.log("Docs: ",doc.data());
         setRents(rents=>[...rents, doc.data()]);
       });
     } catch (e) {

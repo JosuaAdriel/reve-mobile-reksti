@@ -23,10 +23,6 @@ export default function Page() {
     useLocalSearchParams();
   // const clothe = { id, name, brand, image, size, description, price };
 
-  useEffect(() => {
-    console.log("pin: ",pin);
-  },[])
-
   return (
     <View className="relative flex-1">
       <ScrollView contentContainerStyle={styles.container}>

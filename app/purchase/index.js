@@ -21,9 +21,6 @@ export default function Purchase() {
 
   const { id, name, brand, size, image, price, lockerNumber, pin, weight, latitude, longitude, outlet } = useLocalSearchParams(); 
 
-  useEffect(() => {
-    console.log("pin: ", pin);
-  },[])
 
   const [days, setDays] = useState(1);
   const [totalPrice, setPrice] = useState(price);
