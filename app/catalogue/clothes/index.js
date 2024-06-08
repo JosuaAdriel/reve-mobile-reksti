@@ -46,7 +46,7 @@ const ListClothes = () => {
         >
           <View className="w-full border border-gray-200 rounded-lg items-center">
             <Image source={{uri:item.image}} style={{width:'100%',height:150}} className="rounded-lg" />
-            <Text className="text-center h-10 my-2 font-bold text-base">{item.clothesName}</Text>
+            <Text className="text-center h-12 my-2 font-bold text-base">{item.clothesName}</Text>
             <Text className="font-bold text-base">{currencyFormatter.format(item.price)}</Text>
             <Text className="mb-2">Size: {item.clothesSize}</Text>
           </View>
